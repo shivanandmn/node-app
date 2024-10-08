@@ -1,9 +1,15 @@
 /* --- Node.js (backend) --- */
-import WebSocket from "ws";
-import http from "http";
+const WebSocket = require("ws");
+const http = require("http");
+const express = require("express");
+const path = require("path");
 
-const server = http.createServer();
+const app = express();
+const server = http.createServer(app);
 const wss = new WebSocket.Server({ server });
+
+// Serve static files from the public folder
+app.use(express.static(path.join(__dirname, "public")));
 
 const url = "wss://api.openai.com/v1/realtime?model=gpt-4o-realtime-preview-2024-10-01";
 
