@@ -1,43 +1,48 @@
-const express = require('express');
-const http = require('http');
-const WebSocket = require('ws');
-const path = require('path');
+/* --- Node.js (backend) --- */
+import WebSocket from "ws";
+import http from "http";
 
-const app = express();
-const server = http.createServer(app); // Create an HTTP server
-
-// Serve static files from the "public" directory
-app.use(express.static(path.join(__dirname, 'public')));
-
-// Set up a WebSocket server
+const server = http.createServer();
 const wss = new WebSocket.Server({ server });
 
-// WebSocket connection event
-wss.on('connection', (ws) => {
-    console.log('New client connected!');
+const url = "wss://api.openai.com/v1/realtime?model=gpt-4o-realtime-preview-2024-10-01";
 
-    // Message received from a client
-    ws.on('message', (message) => {
-        console.log(`Received: ${message}`);
-        // Echo the message back to the client
-        ws.send(`Server received: ${message}`);
+wss.on("connection", (ws) => {
+    console.log("Client connected");
+
+    // Establish WebSocket connection to the Realtime API
+    const apiSocket = new WebSocket(url, {
+        headers: {
+            "Authorization": "Bearer " + process.env.OPENAI_API_KEY,
+            "OpenAI-Beta": "realtime=v1",
+        },
     });
 
-    // Handle client disconnection
-    ws.on('close', () => {
-        console.log('Client disconnected.');
+    apiSocket.on("open", () => {
+        console.log("Connected to Realtime API");
     });
 
-    // Send a message to the client when they connect
-    ws.send('Welcome! You are connected to the WebSocket server.');
+    // Relay messages from client to Realtime API
+    ws.on("message", (message) => {
+        apiSocket.send(message);
+    });
+
+    // Relay messages from Realtime API to client
+    apiSocket.on("message", (message) => {
+        ws.send(message);
+    });
+
+    // Handle connection closures
+    ws.on("close", () => {
+        console.log("Client disconnected");
+        apiSocket.close();
+    });
+
+    apiSocket.on("close", () => {
+        console.log("Realtime API connection closed");
+    });
 });
 
-app.get('/', (req, res) => {
-    res.send('Hello, this is the HTTP server running!');
-});
-
-// Start the server
-const PORT = process.env.PORT || 3000;
-server.listen(PORT, () => {
-    console.log(`Server is listening on port ${PORT}`);
+server.listen(3000, () => {
+    console.log("Server is listening on port 3000");
 });

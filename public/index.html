@@ -1,44 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WebSocket Client</title>
+    <title>Realtime API Demo</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
-
 <body>
-    <h1>WebSocket Client</h1>
-    <div id="messages"></div>
+    <h1>Realtime API Chat</h1>
+    <div id="conversation"></div>
+    <input type="text" id="inputField" placeholder="Type a message here...">
+    <button id="sendButton">Send</button>
 
-    <script>
-        // Connect to the WebSocket server
-        const socket = new WebSocket('https://node-app360-5e7dfe4577eb.herokuapp.com/'); // Change the URL if deployed
-
-        // When the connection is opened
-        socket.onopen = () => {
-            console.log('Connected to WebSocket server ');
-            socket.send('Hello from the client!');
-        };
-
-        // Listen for messages from the server
-        socket.onmessage = (event) => {
-            const messageElement = document.createElement('p');
-            messageElement.textContent = `Server: ${event.data}`;
-            document.getElementById('messages').appendChild(messageElement);
-            console.log('Message from server:', event.data);
-        };
-
-        // Handle connection closure
-        socket.onclose = () => {
-            console.log('Disconnected from WebSocket server');
-        };
-
-        // Handle errors
-        socket.onerror = (error) => {
-            console.error('WebSocket Error:', error);
-        };
-    </script>
+    <script src="script.js"></script>
 </body>
-
 </html>
