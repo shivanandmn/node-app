@@ -1,4 +1,4 @@
-import WebSocket from "ws";
+const WebSocket = require("ws");
 
 const url = "wss://api.openai.com/v1/realtime?model=gpt-4o-realtime-preview-2024-10-01";
 const ws = new WebSocket(url, {
