@@ -5,6 +5,9 @@ const WebSocket = require('ws');
 const app = express();
 const server = http.createServer(app); // Create an HTTP server
 
+// Serve static files from the "public" directory
+app.use(express.static(path.join(__dirname, 'public')));
+
 // Set up a WebSocket server
 const wss = new WebSocket.Server({ server });
 
